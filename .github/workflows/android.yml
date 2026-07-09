@@ -23,10 +23,8 @@ jobs:
       with:
         node-version: '20'
 
-    - name: Install Cordova & Android Tools
-      run: |
-        npm install -g cordova
-        sudo npm install -g cordova
+    - name: Install Cordova
+      run: npm install -g cordova
 
     - name: Create Mobile App Framework
       run: |
@@ -41,7 +39,8 @@ jobs:
         cp ../index.html www/index.html
         if [ -f ../icon.png ]; then 
           cp ../icon.png .
-          echo '<icon src="icon.png" />' >> config.xml
+          # </widget> ടാഗിന് തൊട്ടുമുകളിലായി ലോഗോ ടാഗ് കൃത്യമായി തിരുകി കയറ്റാനുള്ള കമാൻഡ്:
+          sed -i 's|<\/widget>|<icon src="icon.png" />\n<\/widget>|g' config.xml
         fi
 
     - name: Compile Official Android APK
