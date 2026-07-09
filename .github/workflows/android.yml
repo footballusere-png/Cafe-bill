@@ -40,4 +40,4 @@ jobs:
 
     - name: Configure Capacitor
       run: |
-        # ഇവിടെ ആപ്പിന്റെ പേര് Cafe Bill Pro എന്നും പാക്കേജ് ഐഡി com.aonemedi
+        # ഇവിടെ ആപ്പിന്റെ പേര്  Cafe Bill Pro എന്നും പാക്കേജ് ഐഡി com.aonemedi
