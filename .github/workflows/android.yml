@@ -28,12 +28,10 @@ jobs:
       run: |
         rm -rf android ios node_modules package-lock.json capacitor.config.json www output-apk
 
-    - name: Install Dependencies & Asset Tools
+    - name: Install Dependencies
       run: |
         npm init -y
         npm install @capacitor/core@5 @capacitor/cli@5 @capacitor/android@5
-        # ലോഗോ കൺവേർട്ട് ചെയ്യാനുള്ള ഒഫീഷ്യൽ ടൂൾ ഇൻസ്റ്റാൾ ചെയ്യുന്നു:
-        npm install @capacitor/assets --save-dev
 
     - name: Initialize Web Directory
       run: |
@@ -54,22 +52,40 @@ jobs:
       run: |
         npx cap add android
 
-    - name: Auto Generate Perfect Logo
-      run: |
-        # നിങ്ങളുടെ icon.png ഉപയോഗിച്ച് ആൻഡ്രോയിഡിന് അനുയോജ്യമായ ലോഗോകൾ ഓട്ടോമാറ്റിക് ആയി നിർമ്മിക്കുന്നു
-        if [ -f "icon.png" ]; then
-          mkdir -p assets
-          cp icon.png assets/icon-only.png
-          cp icon.png assets/icon-foreground.png
-          cp icon.png assets/icon-background.png
-          npx capacitor-assets generate --android
-        else
-          echo "icon.png not found"
-        fi
-
-    - name: Sync Web Code & Assets to Android
+    - name: Sync Web Code to Android
       run: |
         npx cap sync android
+
+    - name: Process and Inject Custom Icon
+      run: |
+        if [ -f "icon.png" ]; then
+          echo "Processing icon.png..."
+          # ആൻഡ്രോയിഡ് ടൂളുകൾ ഇമേജ് തെറ്റായി കംപൈൽ ചെയ്യാതിരിക്കാൻ
+          # പഴയ ലോഗോ ബാക്ക്ഗ്രൗണ്ടുകൾ മാറ്റി പുതിയ ഫോൾഡറുകൾ ക്രിയേറ്റ് ചെയ്യുന്നു
+          mkdir -p android/app/src/main/res/mipmap-mdpi
+          mkdir -p android/app/src/main/res/mipmap-hdpi
+          mkdir -p android/app/src/main/res/mipmap-xhdpi
+          mkdir -p android/app/src/main/res/mipmap-xxhdpi
+          mkdir -p android/app/src/main/res/mipmap-xxxhdpi
+          
+          # നിങ്ങളുടെ icon.png എല്ലാ ലോഗോ പ്ലേസുകളിലേക്കും നിർബന്ധിതമായി കോപ്പി ചെയ്യുന്നു
+          cp icon.png android/app/src/main/res/mipmap-mdpi/ic_launcher.png
+          cp icon.png android/app/src/main/res/mipmap-hdpi/ic_launcher.png
+          cp icon.png android/app/src/main/res/mipmap-xhdpi/ic_launcher.png
+          cp icon.png android/app/src/main/res/mipmap-xxhdpi/ic_launcher.png
+          cp icon.png android/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png
+          
+          cp icon.png android/app/src/main/res/mipmap-mdpi/ic_launcher_round.png
+          cp icon.png android/app/src/main/res/mipmap-hdpi/ic_launcher_round.png
+          cp icon.png android/app/src/main/res/mipmap-xhdpi/ic_launcher_round.png
+          cp icon.png android/app/src/main/res/mipmap-xxhdpi/ic_launcher_round.png
+          cp icon.png android/app/src/main/res/mipmap-xxxhdpi/ic_launcher_round.png
+          
+          # എറർ ഉണ്ടാക്കാൻ സാധ്യതയുള്ള പഴയ ഡിഫോൾട്ട് വെക്റ്റർ ഐക്കണുകൾ നീക്കം ചെയ്യുന്നു
+          rm -f android/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml
+          rm -f android/app/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml
+          echo "Icon process completed successfully."
+        fi
 
     - name: Build Official Android Release APK
       run: |
