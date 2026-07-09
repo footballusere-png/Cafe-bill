@@ -1,0 +1,48 @@
+name: Build Android APK
+
+on:
+  push:
+    branches: [ main, master ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Source Code
+      uses: actions/checkout@v3
+
+    - name: Set up Java JDK
+      uses: actions/setup-java@v3
+      with:
+        java-version: '17'
+        distribution: 'zulu'
+
+    - name: Install Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18'
+
+    - name: Install Cordova
+      run: npm install -g cordova
+
+    - name: Create Cordova Project
+      run: |
+        cordova create app com.aonemedia.cafebill CafeBillPro
+        cd app
+        cordova platform add android
+        rm -rf www/*
+        cp ../index.html www/
+        cp ../icon.png .
+        echo '<icon src="icon.png" />' >> config.xml
+
+    - name: Build Android Release APK
+      run: |
+        cd app
+        cordova build android --release
+
+    - name: Upload Finished APK
+      uses: actions/upload-artifact@v3
+      with:
+        name: CafeBillPro-Release-APK
+        path: app/platforms/android/app/build/outputs/apk/release/app-release-unsigned.apk
