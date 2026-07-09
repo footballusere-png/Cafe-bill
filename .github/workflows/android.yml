@@ -28,10 +28,12 @@ jobs:
       run: |
         rm -rf android ios node_modules package-lock.json capacitor.config.json www output-apk
 
-    - name: Install Dependencies
+    - name: Install Dependencies & Asset Tools
       run: |
         npm init -y
         npm install @capacitor/core@5 @capacitor/cli@5 @capacitor/android@5
+        # ലോഗോ കൺവേർട്ട് ചെയ്യാനുള്ള ഒഫീഷ്യൽ ടൂൾ ഇൻസ്റ്റാൾ ചെയ്യുന്നു:
+        npm install @capacitor/assets --save-dev
 
     - name: Initialize Web Directory
       run: |
@@ -52,32 +54,22 @@ jobs:
       run: |
         npx cap add android
 
-    - name: Sync Web Code to Android
+    - name: Auto Generate Perfect Logo
+      run: |
+        # നിങ്ങളുടെ icon.png ഉപയോഗിച്ച് ആൻഡ്രോയിഡിന് അനുയോജ്യമായ ലോഗോകൾ ഓട്ടോമാറ്റിക് ആയി നിർമ്മിക്കുന്നു
+        if [ -f "icon.png" ]; then
+          mkdir -p assets
+          cp icon.png assets/icon-only.png
+          cp icon.png assets/icon-foreground.png
+          cp icon.png assets/icon-background.png
+          npx capacitor-assets generate --android
+        else
+          echo "icon.png not found"
+        fi
+
+    - name: Sync Web Code & Assets to Android
       run: |
         npx cap sync android
-
-    - name: Inject Custom Icon
-      run: |
-        if [ -f "icon.png" ]; then
-          echo "Icon found. Injecting..."
-          mkdir -p android/app/src/main/res/mipmap-mdpi
-          mkdir -p android/app/src/main/res/mipmap-hdpi
-          mkdir -p android/app/src/main/res/mipmap-xhdpi
-          mkdir -p android/app/src/main/res/mipmap-xxhdpi
-          mkdir -p android/app/src/main/res/mipmap-xxxhdpi
-          cp icon.png android/app/src/main/res/mipmap-mdpi/ic_launcher.png
-          cp icon.png android/app/src/main/res/mipmap-hdpi/ic_launcher.png
-          cp icon.png android/app/src/main/res/mipmap-xhdpi/ic_launcher.png
-          cp icon.png android/app/src/main/res/mipmap-xxhdpi/ic_launcher.png
-          cp icon.png android/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png
-          cp icon.png android/app/src/main/res/mipmap-mdpi/ic_launcher_round.png
-          cp icon.png android/app/src/main/res/mipmap-hdpi/ic_launcher_round.png
-          cp icon.png android/app/src/main/res/mipmap-xhdpi/ic_launcher_round.png
-          cp icon.png android/app/src/main/res/mipmap-xxhdpi/ic_launcher_round.png
-          cp icon.png android/app/src/main/res/mipmap-xxxhdpi/ic_launcher_round.png
-        else
-          echo "icon.png not found in root folder!"
-        fi
 
     - name: Build Official Android Release APK
       run: |
