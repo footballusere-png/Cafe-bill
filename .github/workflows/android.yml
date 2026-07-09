@@ -56,26 +56,6 @@ jobs:
       run: |
         npx cap sync android
 
-    - name: Inject Custom Icon
-      run: |
-        if [ -f "icon.png" ]; then
-          mkdir -p android/app/src/main/res/mipmap-mdpi
-          mkdir -p android/app/src/main/res/mipmap-hdpi
-          mkdir -p android/app/src/main/res/mipmap-xhdpi
-          mkdir -p android/app/src/main/res/mipmap-xxhdpi
-          mkdir -p android/app/src/main/res/mipmap-xxxhdpi
-          cp icon.png android/app/src/main/res/mipmap-mdpi/ic_launcher.png
-          cp icon.png android/app/src/main/res/mipmap-hdpi/ic_launcher.png
-          cp icon.png android/app/src/main/res/mipmap-xhdpi/ic_launcher.png
-          cp icon.png android/app/src/main/res/mipmap-xxhdpi/ic_launcher.png
-          cp icon.png android/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png
-          cp icon.png android/app/src/main/res/mipmap-mdpi/ic_launcher_round.png
-          cp icon.png android/app/src/main/res/mipmap-hdpi/ic_launcher_round.png
-          cp icon.png android/app/src/main/res/mipmap-xhdpi/ic_launcher_round.png
-          cp icon.png android/app/src/main/res/mipmap-xxhdpi/ic_launcher_round.png
-          cp icon.png android/app/src/main/res/mipmap-xxxhdpi/ic_launcher_round.png
-        fi
-
     - name: Build Android Release APK
       run: |
         cd android
