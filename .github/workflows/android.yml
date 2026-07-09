@@ -56,7 +56,30 @@ jobs:
       run: |
         npx cap sync android
 
-    - name: Build Android Release APK
+    - name: Inject Custom Icon
+      run: |
+        if [ -f "icon.png" ]; then
+          echo "Icon found. Injecting..."
+          mkdir -p android/app/src/main/res/mipmap-mdpi
+          mkdir -p android/app/src/main/res/mipmap-hdpi
+          mkdir -p android/app/src/main/res/mipmap-xhdpi
+          mkdir -p android/app/src/main/res/mipmap-xxhdpi
+          mkdir -p android/app/src/main/res/mipmap-xxxhdpi
+          cp icon.png android/app/src/main/res/mipmap-mdpi/ic_launcher.png
+          cp icon.png android/app/src/main/res/mipmap-hdpi/ic_launcher.png
+          cp icon.png android/app/src/main/res/mipmap-xhdpi/ic_launcher.png
+          cp icon.png android/app/src/main/res/mipmap-xxhdpi/ic_launcher.png
+          cp icon.png android/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png
+          cp icon.png android/app/src/main/res/mipmap-mdpi/ic_launcher_round.png
+          cp icon.png android/app/src/main/res/mipmap-hdpi/ic_launcher_round.png
+          cp icon.png android/app/src/main/res/mipmap-xhdpi/ic_launcher_round.png
+          cp icon.png android/app/src/main/res/mipmap-xxhdpi/ic_launcher_round.png
+          cp icon.png android/app/src/main/res/mipmap-xxxhdpi/ic_launcher_round.png
+        else
+          echo "icon.png not found in root folder!"
+        fi
+
+    - name: Build Official Android Release APK
       run: |
         cd android
         ./gradlew assembleRelease
@@ -64,5 +87,5 @@ jobs:
     - name: Upload Finished APK to GitHub
       uses: actions/upload-artifact@v4
       with:
-        name: CafeBillPro-Capacitor-APK
+        name: CafeBillPro-Official-APK
         path: android/app/build/outputs/apk/release/app-release-unsigned.apk
