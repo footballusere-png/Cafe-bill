@@ -12,25 +12,25 @@ jobs:
     - name: Checkout Source Code
       uses: actions/checkout@v4
 
-    - name: Set up Java JDK 17
+    - name: Set up Java JDK 11
       uses: actions/setup-java@v4
       with:
-        java-version: '17'
+        java-version: '11'
         distribution: 'temurin'
 
     - name: Install Node.js
       uses: actions/setup-node@v4
       with:
-        node-version: '20'
+        node-version: '18'
 
     - name: Install Cordova
-      run: npm install -g cordova
+      run: npm install -g cordova@12.0.0
 
     - name: Create Mobile App Framework
       run: |
         cordova create app com.aonemedia.cafebill CafeBillPro
         cd app
-        cordova platform add android@12.0.0
+        cordova platform add android@11.0.0
         
     - name: Inject HTML Code & Logo
       run: |
@@ -39,14 +39,13 @@ jobs:
         cp ../index.html www/index.html
         if [ -f ../icon.png ]; then 
           cp ../icon.png .
-          # </widget> ടാഗിന് തൊട്ടുമുകളിലായി ലോഗോ ടാഗ് കൃത്യമായി തിരുകി കയറ്റാനുള്ള കമാൻഡ്:
           sed -i 's|<\/widget>|<icon src="icon.png" />\n<\/widget>|g' config.xml
         fi
 
     - name: Compile Official Android APK
       run: |
         cd app
-        cordova build android --release --no-telemetry --device
+        cordova build android --release --no-telemetry
 
     - name: Upload Finished APK to GitHub
       uses: actions/upload-artifact@v4
