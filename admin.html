@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="ml">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - Smart Online Store</title>
+    <style>
+        :root { --primary-color: #f43397; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f0f2f5; margin: 0; padding: 20px; }
+        .admin-box { max-width: 500px; background: white; margin: 40px auto; padding: 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        h2 { color: var(--primary-color); text-align: center; margin-bottom: 25px; }
+        .form-group { margin-bottom: 20px; }
+        label { display: block; margin-bottom: 8px; font-weight: 600; color: #444; }
+        input[type="text"], input[type="url"] { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; }
+        .submit-btn { width: 100%; background: var(--primary-color); color: white; border: none; padding: 12px; border-radius: 6px; font-size: 16px; font-weight: bold; cursor: pointer; }
+        .back-link { display: block; text-align: center; margin-top: 15px; color: #666; text-decoration: none; font-size: 14px; }
+    </style>
+</head>
+<body>
+
+    <div class="admin-box">
+        <h2>🛍️ Add New Product</h2>
+        <form id="product-form">
+            <div class="form-group">
+                <label>Product Name</label>
+                <input type="text" id="p-name" required placeholder="ഉദാഹരണത്തിന്: Cotton Kurti">
+            </div>
+            <div class="form-group">
+                <label>Product Price</label>
+                <input type="text" id="p-price" required placeholder="ഉദാഹരണത്തിന്: ₹499">
+            </div>
+            <div class="form-group">
+                <label>Product Image URL</label>
+                <input type="url" id="p-img" required placeholder="ഫോട്ടോയുടെ ലിങ്ക് നൽകുക">
+            </div>
+            <div class="form-group">
+                <label>Meesho Affiliate Link</label>
+                <input type="url" id="p-link" required placeholder="മീശോ അഫിലിയേറ്റ് ലിങ്ക് നൽകുക">
+            </div>
+            <button type="submit" class="submit-btn">Publish Product</button>
+        </form>
+        <a href="home.html" class="back-link">← സ്റ്റോറിലേക്ക് തിരികെ പോവുക</a>
+    </div>
+
+    <script>
+        document.getElementById('product-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            alert('പ്രൊഡക്റ്റ് വിജയകരമായി ആഡ് ചെയ്യപ്പെട്ടു!');
+            this.reset();
+        });
+    </script>
+</body>
+</html>
