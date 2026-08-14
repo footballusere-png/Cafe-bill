@@ -36,6 +36,7 @@
         <div class="toggle-link" id="toggle-text">Don't have an account? <span id="toggle-action">Sign Up</span></div>
     </div>
 
+    <!-- Firebase Authentication SDK -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
@@ -79,15 +80,11 @@
 
             if (isSignUp) {
                 createUserWithEmailAndPassword(auth, email, password)
-                    .then(() => {
-                        window.location.href = "home.html";
-                    })
+                    .then(() => { window.location.href = "home.html"; })
                     .catch((error) => { alert(error.message); });
             } else {
                 signInWithEmailAndPassword(auth, email, password)
-                    .then(() => {
-                        window.location.href = "home.html";
-                    })
+                    .then(() => { window.location.href = "home.html"; })
                     .catch((error) => { alert('Login failed. Please check your credentials.'); });
             }
         });
