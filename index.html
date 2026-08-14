@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ml">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -33,7 +33,7 @@
             </div>
             <button type="submit" class="btn" id="submit-btn">Login</button>
         </form>
-        <div class="toggle-link" id="toggle-text">അക്കൗണ്ട് ഇല്ലെങ്കിൽ ഇവിടെ ക്ലിക്ക് ചെയ്യുക: <span id="toggle-action">Sign Up</span></div>
+        <div class="toggle-link" id="toggle-text">Don't have an account? <span id="toggle-action">Sign Up</span></div>
     </div>
 
     <script type="module">
@@ -52,7 +52,6 @@
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
 
-        // ഒരാൾ ലോഗിൻ ചെയ്തു കഴിഞ്ഞാൽ വീണ്ടും ലോഗിൻ പേജിൽ വരാതെ ഓട്ടോമാറ്റിക്കായി ഹോം പേജിലേക്ക് പോകും
         onAuthStateChanged(auth, (user) => {
             if (user) {
                 window.location.href = "home.html";
@@ -88,7 +87,7 @@
                     .then(() => {
                         window.location.href = "home.html";
                     })
-                    .catch((error) => { alert('ലോഗിൻ പരാജയപ്പെട്ടു. വിവരങ്ങൾ പരിശോധിക്കുക.'); });
+                    .catch((error) => { alert('Login failed. Please check your credentials.'); });
             }
         });
     </script>
