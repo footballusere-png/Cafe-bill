@@ -9,14 +9,19 @@
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; background-color: #f8f9fa; color: #333; }
         
         header { background: #ffffff; padding: 15px 20px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; }
-        .logo { font-size: 20px; font-weight: bold; color: var(--primary-color); }
+        .logo { font-size: 18px; font-weight: bold; color: var(--primary-color); }
         .header-right { display: flex; align-items: center; gap: 10px; }
         .admin-trigger-btn { background: #333; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 13px; }
         .logout-btn { background: #eee; border: none; padding: 6px 12px; border-radius: 20px; cursor: pointer; font-weight: 600; }
 
-        .banner { background: linear-gradient(135deg, #f43397, #9b51e0); color: white; text-align: center; padding: 35px 20px; margin-bottom: 20px; }
-        .banner h1 { margin: 0; font-size: 26px; }
-        .banner p { margin: 8px 0 0; font-size: 14px; opacity: 0.9; }
+        .banner { background: linear-gradient(135deg, #f43397, #9b51e0); color: white; text-align: center; padding: 30px 20px; }
+        .banner h1 { margin: 0; font-size: 22px; }
+
+        .filter-container { max-width: 1200px; margin: 20px auto; padding: 0 15px; display: flex; flex-direction: column; gap: 12px; }
+        .search-bar { width: 100%; padding: 12px 15px; border: 1px solid #ddd; border-radius: 8px; font-size: 15px; box-sizing: border-box; outline: none; }
+        .categories { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 5px; }
+        .cat-btn { background: #fff; border: 1px solid #ddd; padding: 8px 16px; border-radius: 20px; cursor: pointer; white-space: nowrap; font-weight: 500; font-size: 14px; }
+        .cat-btn.active { background: var(--primary-color); color: white; border-color: var(--primary-color); }
 
         .container { max-width: 1200px; margin: auto; padding: 0 15px 40px; }
         .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 20px; }
@@ -43,20 +48,22 @@
 
     <div class="banner">
         <h1>Lowest Prices, Best Quality Shopping</h1>
-        <p>Explore trending products and grab the best deals!</p>
+    </div>
+
+    <div class="filter-container">
+        <input type="text" id="search-input" class="search-bar" placeholder="പ്രൊഡക്റ്റുകൾ തിരയുക...">
+        <div class="categories">
+            <button class="cat-btn active" data-category="all">All</button>
+            <button class="cat-btn" data-category="kurti">Kurtis</button>
+            <button class="cat-btn" data-category="saree">Sarees</button>
+            <button class="cat-btn" data-category="mens">Men's Wear</button>
+            <button class="cat-btn" data-category="electronics">Electronics</button>
+        </div>
     </div>
 
     <div class="container">
         <div class="product-grid" id="product-container">
-            <!-- സാമ്പിൾ പ്രൊഡക്റ്റ് കാർഡ് -->
-            <div class="product-card">
-                <img src="https://via.placeholder.com/200" alt="Product">
-                <div class="product-info">
-                    <div class="product-title">Trending Saree / Kurti</div>
-                    <div class="product-price">₹399</div>
-                    <a href="#" class="buy-btn" target="_blank">View on Meesho</a>
-                </div>
-            </div>
+            <!-- ഡാറ്റാബേസിൽ നിന്നുള്ള പ്രൊഡക്റ്റുകൾ ഇവിടെ ലോഡ് ആകും -->
         </div>
         <div class="powered">Powered by Meesho</div>
     </div>
@@ -64,6 +71,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyDzC-okomVG-pe08RH-JPp0s6NG1BBGIEE",
@@ -76,6 +84,7 @@
 
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
+        const db = getFirestore(app);
 
         onAuthStateChanged(auth, (user) => {
             if (!user) { window.location.href = "index.html"; }
@@ -85,7 +94,6 @@
             signOut(auth).then(() => { window.location.href = "index.html"; });
         });
 
-        // അഡ്മിൻ ബട്ടൺ ക്ലിക്ക് ചെയ്യുമ്പോൾ പാസ്‌വേഡ് ചോദിക്കുന്ന കോഡ്
         document.getElementById('admin-btn').addEventListener('click', () => {
             let pwd = prompt("അഡ്മിൻ പാസ്‌വേഡ് നൽകുക:");
             if (pwd === "risham0043") {
@@ -94,6 +102,72 @@
                 alert("പാസ്‌വേഡ് തെറ്റാണ്!");
             }
         });
+
+        let allProducts = [];
+
+        async function loadProducts() {
+            const querySnapshot = await getDocs(collection(db, "products"));
+            const container = document.getElementById('product-container');
+            container.innerHTML = "";
+            allProducts = [];
+
+            querySnapshot.forEach((doc) => {
+                const p = doc.data();
+                allProducts.push(p);
+            });
+
+            displayProducts(allProducts);
+        }
+
+        function displayProducts(products) {
+            const container = document.getElementById('product-container');
+            container.innerHTML = "";
+
+            if (products.length === 0) {
+                container.innerHTML = "<p style='text-align:center; color:#777;'>പ്രൊഡക്റ്റുകൾ ഒന്നും ലഭ്യമല്ല.</p>";
+                return;
+            }
+
+            products.forEach(p => {
+                container.innerHTML += `
+                    <div class="product-card" data-category="${p.category || 'all'}" data-name="${p.name.toLowerCase()}">
+                        <img src="${p.img}" alt="${p.name}">
+                        <div class="product-info">
+                            <div class="product-title">${p.name}</div>
+                            <div class="product-price">${p.price}</div>
+                            <a href="${p.link}" class="buy-btn" target="_blank">View on Meesho</a>
+                        </div>
+                    </div>`;
+            });
+        }
+
+        loadProducts();
+
+        // Search & Filter Logic
+        const searchInput = document.getElementById('search-input');
+        const catButtons = document.querySelectorAll('.cat-btn');
+        let currentCategory = 'all';
+
+        searchInput.addEventListener('input', filterAndSearch);
+
+        catButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                catButtons.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                currentCategory = btn.getAttribute('data-category');
+                filterAndSearch();
+            });
+        });
+
+        function filterAndSearch() {
+            const query = searchInput.value.toLowerCase();
+            const filtered = allProducts.filter(p => {
+                const matchesSearch = p.name.toLowerCase().includes(query);
+                const matchesCat = (currentCategory === 'all' || (p.category && p.category === currentCategory));
+                return matchesSearch && matchesCat;
+            });
+            displayProducts(filtered);
+        }
     </script>
 </body>
 </html>
