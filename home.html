@@ -60,20 +60,17 @@
             <button class="cat-btn" data-category="Electronics">Electronics</button>
             <button class="cat-btn" data-category="Home & Kitchen">Home & Kitchen</button>
             <button class="cat-btn" data-category="Bags & Accessories">Bags & Accessories</button>
-            <button class="cat-btn" data-category="Books & Stationery">Books & Stationery</button>
-            <button class="cat-btn" data-category="Toys & Kids">Toys & Kids</button>
-            <button class="cat-btn" data-category="Sports & Fitness">Sports & Fitness</button>
-            <button class="cat-btn" data-category="Automotive Accessories">Automotive Accessories</button>
         </div>
     </div>
 
     <div class="container">
         <div class="product-grid" id="product-container">
-            <!-- Products loaded from database -->
+            <!-- Products loaded from Firestore -->
         </div>
-        <div class="powered">Powered by Meesho</div>
+        <div class="powered">Powered by Meesho / Affiliate Store</div>
     </div>
 
+    <!-- Firebase Auth (for logout check) & Firestore (for loading products) -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
@@ -141,12 +138,12 @@
 
             products.forEach(p => {
                 container.innerHTML += `
-                    <div class="product-card" data-category="${p.category || 'all'}" data-name="${p.name.toLowerCase()}">
+                    <div class="product-card">
                         <img src="${p.img}" alt="${p.name}">
                         <div class="product-info">
                             <div class="product-title">${p.name}</div>
                             <div class="product-price">${p.price}</div>
-                            <a href="${p.link}" class="buy-btn" target="_blank">View on Meesho</a>
+                            <a href="${p.link}" class="buy-btn" target="_blank">View Product (URL)</a>
                         </div>
                     </div>`;
             });
