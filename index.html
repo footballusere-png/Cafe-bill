@@ -38,7 +38,7 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyDzC-okomVG-pe08RH-JPp0s6NG1BBGIEE",
@@ -51,6 +51,13 @@
 
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
+
+        // ഒരാൾ ലോഗിൻ ചെയ്തു കഴിഞ്ഞാൽ വീണ്ടും ലോഗിൻ പേജിൽ വരാതെ ഓട്ടോമാറ്റിക്കായി ഹോം പേജിലേക്ക് പോകും
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                window.location.href = "home.html";
+            }
+        });
 
         let isSignUp = false;
         const formTitle = document.getElementById('form-title');
@@ -73,7 +80,6 @@
             if (isSignUp) {
                 createUserWithEmailAndPassword(auth, email, password)
                     .then(() => {
-                        alert('അക്കൗണ്ട് വിജയകരമായി ക്രിയേറ്റ് ചെയ്തു!');
                         window.location.href = "home.html";
                     })
                     .catch((error) => { alert(error.message); });
