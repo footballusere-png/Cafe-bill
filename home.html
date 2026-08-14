@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ml">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -51,19 +51,25 @@
     </div>
 
     <div class="filter-container">
-        <input type="text" id="search-input" class="search-bar" placeholder="പ്രൊഡക്റ്റുകൾ തിരയുക...">
-        <div class="categories">
+        <input type="text" id="search-input" class="search-bar" placeholder="Search products...">
+        <div class="categories" id="category-buttons">
             <button class="cat-btn active" data-category="all">All</button>
-            <button class="cat-btn" data-category="kurti">Kurtis</button>
-            <button class="cat-btn" data-category="saree">Sarees</button>
-            <button class="cat-btn" data-category="mens">Men's Wear</button>
-            <button class="cat-btn" data-category="electronics">Electronics</button>
+            <button class="cat-btn" data-category="Fashion & Clothing">Fashion & Clothing</button>
+            <button class="cat-btn" data-category="Footwear">Footwear</button>
+            <button class="cat-btn" data-category="Beauty & Personal Care">Beauty & Personal Care</button>
+            <button class="cat-btn" data-category="Electronics">Electronics</button>
+            <button class="cat-btn" data-category="Home & Kitchen">Home & Kitchen</button>
+            <button class="cat-btn" data-category="Bags & Accessories">Bags & Accessories</button>
+            <button class="cat-btn" data-category="Books & Stationery">Books & Stationery</button>
+            <button class="cat-btn" data-category="Toys & Kids">Toys & Kids</button>
+            <button class="cat-btn" data-category="Sports & Fitness">Sports & Fitness</button>
+            <button class="cat-btn" data-category="Automotive Accessories">Automotive Accessories</button>
         </div>
     </div>
 
     <div class="container">
         <div class="product-grid" id="product-container">
-            <!-- ഡാറ്റാബേസിൽ നിന്നുള്ള പ്രൊഡക്റ്റുകൾ ഇവിടെ ലോഡ് ആകും -->
+            <!-- Products loaded from database -->
         </div>
         <div class="powered">Powered by Meesho</div>
     </div>
@@ -95,11 +101,11 @@
         });
 
         document.getElementById('admin-btn').addEventListener('click', () => {
-            let pwd = prompt("അഡ്മിൻ പാസ്‌വേഡ് നൽകുക:");
+            let pwd = prompt("Enter Admin Password:");
             if (pwd === "risham0043") {
                 window.location.href = "admin.html";
             } else if (pwd !== null) {
-                alert("പാസ്‌വേഡ് തെറ്റാണ്!");
+                alert("Incorrect Password!");
             }
         });
 
@@ -124,7 +130,7 @@
             container.innerHTML = "";
 
             if (products.length === 0) {
-                container.innerHTML = "<p style='text-align:center; color:#777;'>പ്രൊഡക്റ്റുകൾ ഒന്നും ലഭ്യമല്ല.</p>";
+                container.innerHTML = "<p style='text-align:center; color:#777;'>No products available.</p>";
                 return;
             }
 
@@ -143,7 +149,6 @@
 
         loadProducts();
 
-        // Search & Filter Logic
         const searchInput = document.getElementById('search-input');
         const catButtons = document.querySelectorAll('.cat-btn');
         let currentCategory = 'all';
