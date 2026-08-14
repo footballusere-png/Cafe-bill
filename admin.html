@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ml">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -23,32 +23,38 @@
         <form id="product-form">
             <div class="form-group">
                 <label>Product Name</label>
-                <input type="text" id="p-name" required placeholder="ഉദാഹരണത്തിന്: Cotton Kurti">
+                <input type="text" id="p-name" required placeholder="e.g. Cotton Kurti">
             </div>
             <div class="form-group">
                 <label>Product Price</label>
-                <input type="text" id="p-price" required placeholder="ഉദാഹരണത്തിന്: ₹499">
+                <input type="text" id="p-price" required placeholder="e.g. ₹499">
             </div>
             <div class="form-group">
                 <label>Category</label>
                 <select id="p-category" style="width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 6px;">
-                    <option value="kurti">Kurtis</option>
-                    <option value="saree">Sarees</option>
-                    <option value="mens">Men's Wear</option>
-                    <option value="electronics">Electronics</option>
+                    <option value="Fashion & Clothing">Fashion & Clothing</option>
+                    <option value="Footwear">Footwear</option>
+                    <option value="Beauty & Personal Care">Beauty & Personal Care</option>
+                    <option value="Electronics">Electronics</option>
+                    <option value="Home & Kitchen">Home & Kitchen</option>
+                    <option value="Bags & Accessories">Bags & Accessories</option>
+                    <option value="Books & Stationery">Books & Stationery</option>
+                    <option value="Toys & Kids">Toys & Kids</option>
+                    <option value="Sports & Fitness">Sports & Fitness</option>
+                    <option value="Automotive Accessories">Automotive Accessories</option>
                 </select>
             </div>
             <div class="form-group">
-                <label>Product Image URL (ফോട്ടോ ലിങ്ക്)</label>
-                <input type="url" id="p-img" required placeholder="ഫോട്ടോയുടെ ലിങ്ക് ഇവിടെ നൽകുക">
+                <label>Product Image URL</label>
+                <input type="url" id="p-img" required placeholder="Paste image link here">
             </div>
             <div class="form-group">
                 <label>Meesho Affiliate Link</label>
-                <input type="url" id="p-link" required placeholder="മീശോ അഫിലിയേറ്റ് ലിങ്ക് നൽകുക">
+                <input type="url" id="p-link" required placeholder="Paste affiliate link here">
             </div>
             <button type="submit" class="submit-btn">Publish Product</button>
         </form>
-        <a href="home.html" class="back-link">← സ്റ്റോറിലേക്ക് തിരികെ പോവുക</a>
+        <a href="home.html" class="back-link">← Back to Store</a>
     </div>
 
     <script type="module">
@@ -77,10 +83,10 @@
 
             try {
                 await addDoc(collection(db, "products"), { name, price, category, img, link });
-                alert('പ്രൊഡക്റ്റ് വിജയകരമായി വെബ്‌സൈറ്റിൽ ആഡ് ചെയ്തു!');
+                alert('Product added successfully!');
                 document.getElementById('product-form').reset();
             } catch (error) {
-                alert('എറർ: ' + error.message);
+                alert('Error: ' + error.message);
             }
         });
     </script>
