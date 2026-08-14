@@ -11,7 +11,7 @@
         h2 { color: var(--primary-color); text-align: center; margin-bottom: 25px; }
         .form-group { margin-bottom: 20px; }
         label { display: block; margin-bottom: 8px; font-weight: 600; color: #444; }
-        input[type="text"], input[type="url"] { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; }
+        input[type="text"], input[type="url"], select { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; }
         .submit-btn { width: 100%; background: var(--primary-color); color: white; border: none; padding: 12px; border-radius: 6px; font-size: 16px; font-weight: bold; cursor: pointer; }
         .back-link { display: block; text-align: center; margin-top: 15px; color: #666; text-decoration: none; font-size: 14px; }
     </style>
@@ -30,8 +30,17 @@
                 <input type="text" id="p-price" required placeholder="ഉദാഹരണത്തിന്: ₹499">
             </div>
             <div class="form-group">
-                <label>Product Image URL</label>
-                <input type="url" id="p-img" required placeholder="ഫോട്ടോയുടെ ലിങ്ക് നൽകുക">
+                <label>Category</label>
+                <select id="p-category" style="width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 6px;">
+                    <option value="kurti">Kurtis</option>
+                    <option value="saree">Sarees</option>
+                    <option value="mens">Men's Wear</option>
+                    <option value="electronics">Electronics</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Product Image URL (ফോട്ടോ ലിങ്ക്)</label>
+                <input type="url" id="p-img" required placeholder="ഫോട്ടോയുടെ ലിങ്ക് ഇവിടെ നൽകുക">
             </div>
             <div class="form-group">
                 <label>Meesho Affiliate Link</label>
@@ -42,11 +51,37 @@
         <a href="home.html" class="back-link">← സ്റ്റോറിലേക്ക് തിരികെ പോവുക</a>
     </div>
 
-    <script>
-        document.getElementById('product-form').addEventListener('submit', function(e) {
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDzC-okomVG-pe08RH-JPp0s6NG1BBGIEE",
+            authDomain: "a-one-chat-e3642.firebaseapp.com",
+            projectId: "a-one-chat-e3642",
+            storageBucket: "a-one-chat-e3642.firebasestorage.app",
+            messagingSenderId: "91366490582",
+            appId: "1:91366490582:web:669e8a9bfc54f424a82477"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        document.getElementById('product-form').addEventListener('submit', async (e) => {
             e.preventDefault();
-            alert('പ്രൊഡക്റ്റ് വിജയകരമായി ആഡ് ചെയ്യപ്പെട്ടു!');
-            this.reset();
+            const name = document.getElementById('p-name').value;
+            const price = document.getElementById('p-price').value;
+            const category = document.getElementById('p-category').value;
+            const img = document.getElementById('p-img').value;
+            const link = document.getElementById('p-link').value;
+
+            try {
+                await addDoc(collection(db, "products"), { name, price, category, img, link });
+                alert('പ്രൊഡക്റ്റ് വിജയകരമായി വെബ്‌സൈറ്റിൽ ആഡ് ചെയ്തു!');
+                document.getElementById('product-form').reset();
+            } catch (error) {
+                alert('എറർ: ' + error.message);
+            }
         });
     </script>
 </body>
