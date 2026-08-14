@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="ml">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Online Store</title>
+    <style>
+        :root { --primary-color: #f43397; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; background-color: #f8f9fa; color: #333; }
+        
+        header { background: #ffffff; padding: 15px 20px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; }
+        .logo { font-size: 20px; font-weight: bold; color: var(--primary-color); }
+        .header-right { display: flex; align-items: center; gap: 10px; }
+        .admin-trigger-btn { background: #333; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 13px; }
+        .logout-btn { background: #eee; border: none; padding: 6px 12px; border-radius: 20px; cursor: pointer; font-weight: 600; }
+
+        .banner { background: linear-gradient(135deg, #f43397, #9b51e0); color: white; text-align: center; padding: 35px 20px; margin-bottom: 20px; }
+        .banner h1 { margin: 0; font-size: 26px; }
+        .banner p { margin: 8px 0 0; font-size: 14px; opacity: 0.9; }
+
+        .container { max-width: 1200px; margin: auto; padding: 0 15px 40px; }
+        .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 20px; }
+        
+        .product-card { background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.05); display: flex; flex-direction: column; justify-content: space-between; }
+        .product-card img { width: 100%; height: 200px; object-fit: cover; }
+        .product-info { padding: 15px; }
+        .product-title { font-size: 15px; font-weight: 600; margin: 0 0 8px; color: #222; }
+        .product-price { font-size: 16px; font-weight: bold; color: var(--primary-color); margin-bottom: 12px; }
+        .buy-btn { display: block; width: 100%; padding: 10px; background: var(--primary-color); color: white; text-align: center; text-decoration: none; border-radius: 6px; font-weight: bold; box-sizing: border-box; }
+        .buy-btn:hover { background: #d22883; }
+        .powered { text-align: center; font-size: 12px; color: #777; margin-top: 30px; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo">🛍️ Smart Online Store</div>
+        <div class="header-right">
+            <button class="admin-trigger-btn" id="admin-btn">Admin</button>
+            <button class="logout-btn" id="logout-btn">Logout</button>
+        </div>
+    </header>
+
+    <div class="banner">
+        <h1>Lowest Prices, Best Quality Shopping</h1>
+        <p>Explore trending products and grab the best deals!</p>
+    </div>
+
+    <div class="container">
+        <div class="product-grid" id="product-container">
+            <!-- സാമ്പിൾ പ്രൊഡക്റ്റ് കാർഡ് -->
+            <div class="product-card">
+                <img src="https://via.placeholder.com/200" alt="Product">
+                <div class="product-info">
+                    <div class="product-title">Trending Saree / Kurti</div>
+                    <div class="product-price">₹399</div>
+                    <a href="#" class="buy-btn" target="_blank">View on Meesho</a>
+                </div>
+            </div>
+        </div>
+        <div class="powered">Powered by Meesho</div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDzC-okomVG-pe08RH-JPp0s6NG1BBGIEE",
+            authDomain: "a-one-chat-e3642.firebaseapp.com",
+            projectId: "a-one-chat-e3642",
+            storageBucket: "a-one-chat-e3642.firebasestorage.app",
+            messagingSenderId: "91366490582",
+            appId: "1:91366490582:web:669e8a9bfc54f424a82477"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+
+        onAuthStateChanged(auth, (user) => {
+            if (!user) { window.location.href = "index.html"; }
+        });
+
+        document.getElementById('logout-btn').addEventListener('click', () => {
+            signOut(auth).then(() => { window.location.href = "index.html"; });
+        });
+
+        // അഡ്മിൻ ബട്ടൺ ക്ലിക്ക് ചെയ്യുമ്പോൾ പാസ്‌വേഡ് ചോദിക്കുന്ന കോഡ്
+        document.getElementById('admin-btn').addEventListener('click', () => {
+            let pwd = prompt("അഡ്മിൻ പാസ്‌വേഡ് നൽകുക:");
+            if (pwd === "risham0043") {
+                window.location.href = "admin.html";
+            } else if (pwd !== null) {
+                alert("പാസ്‌വേഡ് തെറ്റാണ്!");
+            }
+        });
+    </script>
+</body>
+</html>
