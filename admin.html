@@ -60,12 +60,11 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getDatabase, ref, push } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+        import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyDzC-okomVG-pe08RH-JPp0s6NG1BBGIEE",
             authDomain: "a-one-chat-e3642.firebaseapp.com",
-            databaseURL: "https://a-one-chat-e3642-default-rtdb.asia-southeast1.firebasedatabase.app",
             projectId: "a-one-chat-e3642",
             storageBucket: "a-one-chat-e3642.firebasestorage.app",
             messagingSenderId: "91366490582",
@@ -73,11 +72,10 @@
         };
 
         const app = initializeApp(firebaseConfig);
-        const db = getDatabase(app);
+        const db = getFirestore(app);
 
         document.getElementById('product-form').addEventListener('submit', async (e) => {
             e.preventDefault();
-            
             const name = document.getElementById('p-name').value;
             const price = document.getElementById('p-price').value;
             const category = document.getElementById('p-category').value;
@@ -85,15 +83,7 @@
             const link = document.getElementById('p-link').value;
 
             try {
-                const productRef = ref(db, 'products');
-                await push(productRef, {
-                    name: name,
-                    price: price,
-                    category: category,
-                    img: img,
-                    link: link
-                });
-                
+                await addDoc(collection(db, "products"), { name, price, category, img, link });
                 alert('Product added successfully!');
                 document.getElementById('product-form').reset();
             } catch (error) {
