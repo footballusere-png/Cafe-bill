@@ -20,7 +20,7 @@
 <body>
 
     <div class="admin-box">
-        <h2>🛍️ Add New Product</h2>
+        <h2>🛍️ Add New Product (URL Base)</h2>
         <form id="product-form">
             <div class="form-group">
                 <label>Product Name</label>
@@ -39,19 +39,15 @@
                     <option value="Electronics">Electronics</option>
                     <option value="Home & Kitchen">Home & Kitchen</option>
                     <option value="Bags & Accessories">Bags & Accessories</option>
-                    <option value="Books & Stationery">Books & Stationery</option>
-                    <option value="Toys & Kids">Toys & Kids</option>
-                    <option value="Sports & Fitness">Sports & Fitness</option>
-                    <option value="Automotive Accessories">Automotive Accessories</option>
                 </select>
             </div>
             <div class="form-group">
                 <label>Product Image URL</label>
-                <input type="url" id="p-img" required placeholder="Paste image link here">
+                <input type="url" id="p-img" required placeholder="Paste image direct link here">
             </div>
             <div class="form-group">
-                <label>Meesho Affiliate Link</label>
-                <input type="url" id="p-link" required placeholder="Paste affiliate link here">
+                <label>Affiliate / Product URL</label>
+                <input type="url" id="p-link" required placeholder="Paste target website URL here">
             </div>
             <button type="submit" class="submit-btn">Publish Product</button>
         </form>
@@ -85,7 +81,7 @@
 
             try {
                 await addDoc(collection(db, "products"), { name, price, category, img, link });
-                alert('Product added successfully!');
+                alert('Product successfully added with URL!');
                 document.getElementById('product-form').reset();
             } catch (error) {
                 alert('Error: ' + error.message);
