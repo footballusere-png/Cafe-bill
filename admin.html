@@ -13,6 +13,7 @@
         label { display: block; margin-bottom: 8px; font-weight: 600; color: #444; }
         input[type="text"], input[type="url"], select { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; }
         .submit-btn { width: 100%; background: var(--primary-color); color: white; border: none; padding: 12px; border-radius: 6px; font-size: 16px; font-weight: bold; cursor: pointer; }
+        .submit-btn:hover { background: #d22883; }
         .back-link { display: block; text-align: center; margin-top: 15px; color: #666; text-decoration: none; font-size: 14px; }
     </style>
 </head>
@@ -64,7 +65,7 @@
         const firebaseConfig = {
             apiKey: "AIzaSyDzC-okomVG-pe08RH-JPp0s6NG1BBGIEE",
             authDomain: "a-one-chat-e3642.firebaseapp.com",
-            databaseURL: "https://a-one-chat-e3642-default-rtdb.asia-southeast1.firebasedatabase.app", // നിങ്ങളുടെ റിയൽടൈം ഡാറ്റാബേസ് URL ഇവിടെ നൽകുക
+            databaseURL: "https://a-one-chat-e3642-default-rtdb.asia-southeast1.firebasedatabase.app",
             projectId: "a-one-chat-e3642",
             storageBucket: "a-one-chat-e3642.firebasestorage.app",
             messagingSenderId: "91366490582",
@@ -76,6 +77,7 @@
 
         document.getElementById('product-form').addEventListener('submit', async (e) => {
             e.preventDefault();
+            
             const name = document.getElementById('p-name').value;
             const price = document.getElementById('p-price').value;
             const category = document.getElementById('p-category').value;
@@ -83,7 +85,15 @@
             const link = document.getElementById('p-link').value;
 
             try {
-                await push(ref(db, 'products'), { name, price, category, img, link });
+                const productRef = ref(db, 'products');
+                await push(productRef, {
+                    name: name,
+                    price: price,
+                    category: category,
+                    img: img,
+                    link: link
+                });
+                
                 alert('Product added successfully!');
                 document.getElementById('product-form').reset();
             } catch (error) {
