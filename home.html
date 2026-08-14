@@ -77,12 +77,11 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-        import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+        import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyDzC-okomVG-pe08RH-JPp0s6NG1BBGIEE",
             authDomain: "a-one-chat-e3642.firebaseapp.com",
-            databaseURL: "https://a-one-chat-e3642-default-rtdb.asia-southeast1.firebasedatabase.app",
             projectId: "a-one-chat-e3642",
             storageBucket: "a-one-chat-e3642.firebasestorage.app",
             messagingSenderId: "91366490582",
@@ -91,7 +90,7 @@
 
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
-        const db = getDatabase(app);
+        const db = getFirestore(app);
 
         onAuthStateChanged(auth, (user) => {
             if (!user) { window.location.href = "index.html"; }
@@ -111,26 +110,23 @@
         });
 
         let allProducts = [];
-        const container = document.getElementById('product-container');
 
-        // Realtime listener to load products automatically
-        const productRef = ref(db, 'products');
-        onValue(productRef, (snapshot) => {
+        async function loadProducts() {
+            const querySnapshot = await getDocs(collection(db, "products"));
+            const container = document.getElementById('product-container');
             container.innerHTML = "";
             allProducts = [];
 
-            if (snapshot.exists()) {
-                snapshot.forEach((childSnapshot) => {
-                    const p = childSnapshot.val();
-                    allProducts.push(p);
-                });
-                displayProducts(allProducts);
-            } else {
-                container.innerHTML = "<p style='text-align:center; color:#777; grid-column: 1/-1;'>No products available.</p>";
-            }
-        });
+            querySnapshot.forEach((doc) => {
+                const p = doc.data();
+                allProducts.push(p);
+            });
+
+            displayProducts(allProducts);
+        }
 
         function displayProducts(products) {
+            const container = document.getElementById('product-container');
             container.innerHTML = "";
 
             if (products.length === 0) {
@@ -150,6 +146,8 @@
                     </div>`;
             });
         }
+
+        loadProducts();
 
         const searchInput = document.getElementById('search-input');
         const catButtons = document.querySelectorAll('.cat-btn');
