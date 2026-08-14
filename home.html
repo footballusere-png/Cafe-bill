@@ -62,7 +62,7 @@
             <button class="cat-btn" data-category="Bags & Accessories">Bags & Accessories</button>
             <button class="cat-btn" data-category="Books & Stationery">Books & Stationery</button>
             <button class="cat-btn" data-category="Toys & Kids">Toys & Kids</button>
-            <button class="cat-btn" data-category="Sports & Fitness">Sports & Fitness</button>
+            <button class="cat-btn" data-category.cat="Sports & Fitness" data-category="Sports & Fitness">Sports & Fitness</button>
             <button class="cat-btn" data-category="Automotive Accessories">Automotive Accessories</button>
         </div>
     </div>
@@ -77,11 +77,12 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-        import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getDatabase, ref, get, child } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyDzC-okomVG-pe08RH-JPp0s6NG1BBGIEE",
             authDomain: "a-one-chat-e3642.firebaseapp.com",
+            databaseURL: "https://a-one-chat-e3642-default-rtdb.asia-southeast1.firebasedatabase.app", // നിങ്ങളുടെ റിയൽടൈം ഡാറ്റാബേസ് URL ഇവിടെ നൽകുക
             projectId: "a-one-chat-e3642",
             storageBucket: "a-one-chat-e3642.firebasestorage.app",
             messagingSenderId: "91366490582",
@@ -90,7 +91,7 @@
 
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
-        const db = getFirestore(app);
+        const db = getDatabase(app);
 
         onAuthStateChanged(auth, (user) => {
             if (!user) { window.location.href = "index.html"; }
@@ -112,17 +113,25 @@
         let allProducts = [];
 
         async function loadProducts() {
-            const querySnapshot = await getDocs(collection(db, "products"));
-            const container = document.getElementById('product-container');
-            container.innerHTML = "";
-            allProducts = [];
+            const dbRef = ref(db);
+            try {
+                const snapshot = await get(child(dbRef, `products`));
+                const container = document.getElementById('product-container');
+                container.innerHTML = "";
+                allProducts = [];
 
-            querySnapshot.forEach((doc) => {
-                const p = doc.data();
-                allProducts.push(p);
-            });
-
-            displayProducts(allProducts);
+                if (snapshot.exists()) {
+                    snapshot.forEach((childSnapshot) => {
+                        const p = childSnapshot.val();
+                        allProducts.push(p);
+                    });
+                    displayProducts(allProducts);
+                } else {
+                    container.innerHTML = "<p style='text-align:center; color:#777;'>No products available.</p>";
+                }
+            } catch (error) {
+                console.error(error);
+            }
         }
 
         function displayProducts(products) {
@@ -138,10 +147,10 @@
                 container.innerHTML += `
                     <div class="product-card" data-category="${p.category || 'all'}" data-name="${p.name.toLowerCase()}">
                         <img src="${p.img}" alt="${p.name}">
-                        <div class="product-info">
+                        <div class="post-info product-info">
                             <div class="product-title">${p.name}</div>
                             <div class="product-price">${p.price}</div>
-                            <a href="${p.link}" class="buy-btn" target="_blank">View on Meesho</a>
+                            <a href="${p.link}" class="buy-bin buy-btn" target="_blank">View on Meesho</a>
                         </div>
                     </div>`;
             });
