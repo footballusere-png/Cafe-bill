@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="ml">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Smart Store</title><link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="topbar">
+  <div><strong>Smart Store</strong><span class="muted"> Meesho Affiliate Products</span></div>
+  <div class="actions"><a href="admin.html" class="ghost">Admin</a><button id="logout" class="ghost">Logout</button></div>
+</header>
+<main class="container">
+  <section class="hero">
+    <h1>Trending Products</h1>
+    <p>Products discover ചെയ്യൂ, image/product link വഴി വാങ്ങാം.</p>
+    <input id="search" class="search" placeholder="Search products…">
+  </section>
+  <div id="categories" class="chips"></div>
+  <section id="products" class="grid"></section>
+  <p id="status" class="muted center"></p>
+</main>
+<script type="module" src="home.js"></script>
+</body>
+</html>

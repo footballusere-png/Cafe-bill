@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="ml">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Smart Store — Login</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main class="auth-wrap">
+    <section class="card auth-card">
+      <h1>Smart Store</h1>
+      <p class="muted">Login / Signup</p>
+      <div class="tabs"><button id="loginTab" class="active">Login</button><button id="signupTab">Signup</button></div>
+      <form id="authForm">
+        <input id="email" type="email" placeholder="Email" required>
+        <input id="password" type="password" placeholder="Password (6+ characters)" minlength="6" required>
+        <button class="primary" type="submit" id="submitBtn">Login</button>
+      </form>
+      <p id="msg" class="msg"></p>
+    </section>
+  </main>
+  <script type="module" src="firebase-auth.js"></script>
+</body>
+</html>

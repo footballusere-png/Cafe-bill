@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="ml">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Admin — Smart Store</title><link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="topbar"><strong>Smart Store Admin</strong><a href="home.html" class="ghost">Home</a></header>
+<main class="container admin">
+  <section id="gate" class="card auth-card">
+    <h2>Admin Access</h2>
+    <p class="muted">Temporary client-side gate. Production-ൽ server-side admin authorization ഉപയോഗിക്കുക.</p>
+    <input id="adminPass" type="password" placeholder="Admin password">
+    <button id="unlock" class="primary">Unlock</button>
+    <p id="gateMsg" class="msg"></p>
+  </section>
+
+  <section id="panel" hidden>
+    <div class="card">
+      <h2>Add Product</h2>
+      <form id="productForm" class="form-grid">
+        <input id="name" placeholder="Product name" required>
+        <input id="category" placeholder="Category" required>
+        <input id="price" type="number" step="0.01" min="0" placeholder="Price" required>
+        <input id="image_url" type="url" placeholder="Image URL" required>
+        <input id="product_url" type="url" placeholder="Meesho affiliate/product URL" required>
+        <button class="primary" type="submit">Add Product</button>
+      </form>
+      <p id="formMsg" class="msg"></p>
+    </div>
+    <div class="card"><h2>Products</h2><div id="adminList"></div></div>
+  </section>
+</main>
+<script type="module" src="admin.js"></script>
+</body>
+</html>
