@@ -1,24 +1,67 @@
-<!doctype html>
-<html lang="ml">
+<!DOCTYPE html>
+<html lang="en">
 <head>
-  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Smart Store — Login</title>
-  <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Online Store</title>
+    <style>
+        /* CSS Variables for Dark/Light Mode */
+        :root { 
+            --bg-color: #f8f9fa; 
+            --text-color: #333; 
+            --card-bg: #ffffff;
+            --primary-color: #000000; /* Black & White Theme */
+        }
+        body.dark-mode { 
+            --bg-color: #121212; 
+            --text-color: #ffffff; 
+            --card-bg: #1e1e1e;
+            --primary-color: #ffffff;
+        }
+
+        body { font-family: sans-serif; background-color: var(--bg-color); color: var(--text-color); margin: 0; transition: 0.3s; }
+        
+        header { background: var(--card-bg); padding: 15px 20px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); display: flex; justify-content: space-between; align-items: center; }
+        
+        .toggle-btn { background: var(--primary-color); color: var(--bg-color); border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; }
+
+        .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px; padding: 20px; }
+        .product-card { background: var(--card-bg); padding: 15px; border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .buy-btn { display: block; padding: 10px; background: var(--primary-color); color: var(--bg-color); text-align: center; text-decoration: none; border-radius: 5px; margin-top: 10px; }
+    </style>
 </head>
 <body>
-  <main class="auth-wrap">
-    <section class="card auth-card">
-      <h1>Smart Store</h1>
-      <p class="muted">Login / Signup</p>
-      <div class="tabs"><button id="loginTab" class="active">Login</button><button id="signupTab">Signup</button></div>
-      <form id="authForm">
-        <input id="email" type="email" placeholder="Email" required>
-        <input id="password" type="password" placeholder="Password (6+ characters)" minlength="6" required>
-        <button class="primary" type="submit" id="submitBtn">Login</button>
-      </form>
-      <p id="msg" class="msg"></p>
-    </section>
-  </main>
-  <script type="module" src="firebase-auth.js"></script>
+
+    <header>
+        <div>🛍️ Store</div>
+        <button class="toggle-btn" onclick="toggleTheme()">Switch Theme</button>
+    </header>
+
+    <div class="product-grid" id="product-container"></div>
+
+    <script type="module">
+        import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm";
+
+        const supabase = createClient('https://dnlvoubafquotxcnqkhi.supabase.co', 'sb_publishable_fyiPBavDsU-Aax49r5Xi4g_9eg67WnA');
+
+        // Theme Toggle Logic
+        window.toggleTheme = () => {
+            document.body.classList.toggle('dark-mode');
+        };
+
+        async function loadProducts() {
+            const { data } = await supabase.from('products').select('*');
+            const container = document.getElementById('product-container');
+            container.innerHTML = data.map(p => `
+                <div class="product-card">
+                    <img src="${p.img}" width="100%">
+                    <h3>${p.name}</h3>
+                    <p>${p.price}</p>
+                    <a href="${p.link}" class="buy-btn">View</a>
+                </div>
+            `).join('');
+        }
+        loadProducts();
+    </script>
 </body>
 </html>
