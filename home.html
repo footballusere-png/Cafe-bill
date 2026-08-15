@@ -1,24 +1,166 @@
-<!doctype html>
-<html lang="ml">
+<!DOCTYPE html>
+<html lang="en">
 <head>
-  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Smart Store</title><link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Online Store</title>
+    <style>
+        :root { 
+            --bg-color: #000000; 
+            --text-color: #ffffff; 
+            --card-bg: #121212;
+            --border-color: #333333;
+            --accent-color: #ffffff;
+        }
+
+        body { font-family: sans-serif; background-color: var(--bg-color); color: var(--text-color); margin: 0; }
+        
+        header { background: var(--card-bg); border-bottom: 1px solid var(--border-color); padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; }
+        .logo { font-size: 18px; font-weight: bold; }
+        .header-right { display: flex; gap: 10px; align-items: center; }
+        .admin-btn, .logout-btn { background: transparent; color: var(--text-color); border: 1px solid var(--border-color); padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 13px; }
+        .admin-btn:hover, .logout-btn:hover { background: #222; }
+
+        .filter-container { max-width: 1200px; margin: 20px auto; padding: 0 15px; display: flex; flex-direction: column; gap: 12px; }
+        .search-bar { width: 100%; padding: 12px; background: var(--card-bg); border: 1px solid var(--border-color); color: var(--text-color); border-radius: 8px; font-size: 15px; box-sizing: border-box; outline: none; }
+        .categories { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 5px; }
+        .cat-btn { background: var(--card-bg); color: var(--text-color); border: 1px solid var(--border-color); padding: 8px 16px; border-radius: 20px; cursor: pointer; white-space: nowrap; font-size: 14px; }
+        .cat-btn.active { background: var(--accent-color); color: var(--bg-color); font-weight: bold; }
+
+        .container { max-width: 1200px; margin: auto; padding: 0 15px 40px; }
+        .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 20px; }
+        
+        .product-card { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 12px; overflow: hidden; display: flex; flex-direction: column; justify-content: space-between; }
+        .product-card img { width: 100%; height: 200px; object-fit: cover; border-bottom: 1px solid var(--border-color); }
+        .product-info { padding: 15px; }
+        .product-title { font-size: 15px; font-weight: 600; margin: 0 0 8px; }
+        .product-price { font-size: 16px; font-weight: bold; margin-bottom: 12px; }
+        .buy-btn { display: block; width: 100%; padding: 10px; background: var(--accent-color); color: var(--bg-color); text-align: center; text-decoration: none; border-radius: 6px; font-weight: bold; box-sizing: border-box; }
+        .buy-btn:hover { opacity: 0.8; }
+    </style>
 </head>
 <body>
-<header class="topbar">
-  <div><strong>Smart Store</strong><span class="muted"> Meesho Affiliate Products</span></div>
-  <div class="actions"><a href="admin.html" class="ghost">Admin</a><button id="logout" class="ghost">Logout</button></div>
-</header>
-<main class="container">
-  <section class="hero">
-    <h1>Trending Products</h1>
-    <p>Products discover ചെയ്യൂ, image/product link വഴി വാങ്ങാം.</p>
-    <input id="search" class="search" placeholder="Search products…">
-  </section>
-  <div id="categories" class="chips"></div>
-  <section id="products" class="grid"></section>
-  <p id="status" class="muted center"></p>
-</main>
-<script type="module" src="home.js"></script>
+
+    <header>
+        <div class="logo">🛍️ Smart Store</div>
+        <div class="header-right">
+            <button class="admin-btn" id="admin-btn">Admin</button>
+            <button class="logout-btn" id="logout-btn">Logout</button>
+        </div>
+    </header>
+
+    <div class="filter-container">
+        <input type="text" id="search-input" class="search-bar" placeholder="Search products...">
+        <div class="categories" id="category-buttons">
+            <button class="cat-btn active" data-category="all">All</button>
+            <button class="cat-btn" data-category="Fashion & Clothing">Fashion & Clothing</button>
+            <button class="cat-btn" data-category="Footwear">Footwear</button>
+            <button class="cat-btn" data-category="Beauty & Personal Care">Beauty & Personal Care</button>
+            <button class="cat-btn" data-category="Electronics">Electronics</button>
+            <button class="cat-btn" data-category="Home & Kitchen">Home & Kitchen</button>
+            <button class="cat-btn" data-category="Bags & Accessories">Bags & Accessories</button>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="product-grid" id="product-container"></div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDzC-okomVG-pe08RH-JPp0s6NG1BBGIEE",
+            authDomain: "a-one-chat-e3642.firebaseapp.com",
+            projectId: "a-one-chat-e3642",
+            storageBucket: "a-one-chat-e3642.firebasestorage.app",
+            messagingSenderId: "91366490582",
+            appId: "1:91366490582:web:669e8a9bfc54f424a82477",
+            measurementId: "G-T4WVE2QKXB"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+
+        const supabase = createClient('https://dnlvoubafquotxcnqkhi.supabase.co', 'sb_publishable_fyiPBavDsU-Aax49r5Xi4g_9eg67WnA');
+
+        onAuthStateChanged(auth, (user) => {
+            if (!user) { window.location.href = "index.html"; }
+        });
+
+        document.getElementById('logout-btn').addEventListener('click', () => {
+            signOut(auth).then(() => { window.location.href = "index.html"; });
+        });
+
+        document.getElementById('admin-btn').addEventListener('click', () => {
+            let pwd = prompt("Enter Admin Password:");
+            if (pwd === "risham0043") {
+                window.location.href = "admin.html";
+            } else if (pwd !== null) {
+                alert("Incorrect Password!");
+            }
+        });
+
+        let allProducts = [];
+
+        async function loadProducts() {
+            const { data, error } = await supabase.from('products').select('*');
+            if (error) {
+                console.error("Error:", error.message);
+                return;
+            }
+            allProducts = data || [];
+            displayProducts(allProducts);
+        }
+
+        function displayProducts(products) {
+            const container = document.getElementById('product-container');
+            container.innerHTML = "";
+            if (products.length === 0) {
+                container.innerHTML = "<p style='text-align:center; color:#888; grid-column:1/-1;'>No products found.</p>";
+                return;
+            }
+            products.forEach(p => {
+                container.innerHTML += `
+                    <div class="product-card">
+                        <img src="${p.img}" alt="${p.name}">
+                        <div class="product-info">
+                            <div class="product-title">${p.name}</div>
+                            <div class="product-price">${p.price}</div>
+                            <a href="${p.link}" class="buy-btn" target="_blank">View Product</a>
+                        </div>
+                    </div>`;
+            });
+        }
+
+        loadProducts();
+
+        const searchInput = document.getElementById('search-input');
+        const catButtons = document.querySelectorAll('.cat-btn');
+        let currentCategory = 'all';
+
+        searchInput.addEventListener('input', filterAndSearch);
+
+        catButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                catButtons.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                currentCategory = btn.getAttribute('data-category');
+                filterAndSearch();
+            });
+        });
+
+        function filterAndSearch() {
+            const query = searchInput.value.toLowerCase();
+            const filtered = allProducts.filter(p => {
+                const matchesSearch = p.name && p.name.toLowerCase().includes(query);
+                const matchesCat = (currentCategory === 'all' || (p.category && p.category === currentCategory));
+                return matchesSearch && matchesCat;
+            });
+            displayProducts(filtered);
+        }
+    </script>
 </body>
 </html>
