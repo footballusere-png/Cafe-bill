@@ -49,7 +49,7 @@
                 <label>Affiliate / Product URL</label>
                 <input type="url" id="p-link" required placeholder="Paste target website link">
             </div>
-            <button type="submit" class="submit-btn">Publish Product</button>
+            <button type="submit" class="submit-btn" id="submit-btn">Publish Product</button>
         </form>
         <a href="home.html" class="back-link">← Back to Store</a>
     </div>
@@ -61,21 +61,36 @@
 
         document.getElementById('product-form').addEventListener('submit', async (e) => {
             e.preventDefault();
-            const name = document.getElementById('p-name').value;
-            const price = document.getElementById('p-price').value;
-            const category = document.getElementById('p-category').value;
-            const img = document.getElementById('p-img').value;
-            const link = document.getElementById('p-link').value;
+            
+            const submitBtn = document.getElementById('submit-btn');
+            submitBtn.innerText = "Publishing...";
+            submitBtn.disabled = true;
 
-            const { error } = await supabase
-                .from('products')
-                .insert([{ name, price, category, img, link }]);
+            const productData = {
+                name: document.getElementById('p-name').value.trim(),
+                price: document.getElementById('p-price').value.trim(),
+                category: document.getElementById('p-category').value.trim(),
+                img: document.getElementById('p-img').value.trim(),
+                link: document.getElementById('p-link').value.trim()
+            };
 
-            if (error) {
-                alert('Error: ' + error.message);
-            } else {
+            try {
+                const { data, error } = await supabase
+                    .from('products')
+                    .insert([productData]);
+
+                if (error) {
+                    throw error;
+                }
+
                 alert('Product successfully added to Supabase!');
                 document.getElementById('product-form').reset();
+            } catch (err) {
+                alert('Error: ' + err.message);
+                console.error(err);
+            } finally {
+                submitBtn.innerText = "Publish Product";
+                submitBtn.disabled = false;
             }
         });
     </script>
