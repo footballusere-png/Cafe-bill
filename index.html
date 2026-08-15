@@ -3,65 +3,87 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Smart Online Store</title>
+    <title>Login - Smart Online Store</title>
     <style>
-        /* CSS Variables for Dark/Light Mode */
-        :root { 
-            --bg-color: #f8f9fa; 
-            --text-color: #333; 
-            --card-bg: #ffffff;
-            --primary-color: #000000; /* Black & White Theme */
-        }
-        body.dark-mode { 
-            --bg-color: #121212; 
-            --text-color: #ffffff; 
-            --card-bg: #1e1e1e;
-            --primary-color: #ffffff;
-        }
-
-        body { font-family: sans-serif; background-color: var(--bg-color); color: var(--text-color); margin: 0; transition: 0.3s; }
-        
-        header { background: var(--card-bg); padding: 15px 20px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); display: flex; justify-content: space-between; align-items: center; }
-        
-        .toggle-btn { background: var(--primary-color); color: var(--bg-color); border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; }
-
-        .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px; padding: 20px; }
-        .product-card { background: var(--card-bg); padding: 15px; border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-        .buy-btn { display: block; padding: 10px; background: var(--primary-color); color: var(--bg-color); text-align: center; text-decoration: none; border-radius: 5px; margin-top: 10px; }
+        body { font-family: sans-serif; background: #000000; color: #ffffff; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .auth-container { background: #121212; border: 1px solid #333; padding: 30px; border-radius: 12px; width: 100%; max-width: 400px; box-sizing: border-box; }
+        h2 { text-align: center; margin-bottom: 20px; color: #fff; }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; font-weight: 600; color: #ccc; }
+        input { width: 100%; padding: 10px; background: #222; border: 1px solid #444; color: #fff; border-radius: 6px; box-sizing: border-box; }
+        .btn { width: 100%; background: #ffffff; color: #000000; border: none; padding: 12px; border-radius: 6px; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 10px; }
+        .btn:hover { background: #cccccc; }
+        .toggle-link { text-align: center; margin-top: 15px; font-size: 14px; color: #888; cursor: pointer; }
+        .toggle-link span { color: #ffffff; font-weight: bold; }
     </style>
 </head>
 <body>
 
-    <header>
-        <div>🛍️ Store</div>
-        <button class="toggle-btn" onclick="toggleTheme()">Switch Theme</button>
-    </header>
-
-    <div class="product-grid" id="product-container"></div>
+    <div class="auth-container">
+        <h2 id="form-title">Smart Online Store</h2>
+        <form id="auth-form">
+            <div class="form-group">
+                <label>Email</label>
+                <input type="email" id="email" required placeholder="name@example.com">
+            </div>
+            <div class="form-group">
+                <label>Password</label>
+                <input type="password" id="password" required placeholder="********">
+            </div>
+            <button type="submit" class="btn" id="submit-btn">Login</button>
+        </form>
+        <div class="toggle-link" id="toggle-text">Don't have an account? <span id="toggle-action">Sign Up</span></div>
+    </div>
 
     <script type="module">
-        import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm";
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
-        const supabase = createClient('https://dnlvoubafquotxcnqkhi.supabase.co', 'sb_publishable_fyiPBavDsU-Aax49r5Xi4g_9eg67WnA');
-
-        // Theme Toggle Logic
-        window.toggleTheme = () => {
-            document.body.classList.toggle('dark-mode');
+        const firebaseConfig = {
+            apiKey: "AIzaSyDzC-okomVG-pe08RH-JPp0s6NG1BBGIEE",
+            authDomain: "a-one-chat-e3642.firebaseapp.com",
+            projectId: "a-one-chat-e3642",
+            storageBucket: "a-one-chat-e3642.firebasestorage.app",
+            messagingSenderId: "91366490582",
+            appId: "1:91366490582:web:669e8a9bfc54f424a82477",
+            measurementId: "G-T4WVE2QKXB"
         };
 
-        async function loadProducts() {
-            const { data } = await supabase.from('products').select('*');
-            const container = document.getElementById('product-container');
-            container.innerHTML = data.map(p => `
-                <div class="product-card">
-                    <img src="${p.img}" width="100%">
-                    <h3>${p.name}</h3>
-                    <p>${p.price}</p>
-                    <a href="${p.link}" class="buy-btn">View</a>
-                </div>
-            `).join('');
-        }
-        loadProducts();
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+
+        onAuthStateChanged(auth, (user) => {
+            if (user) { window.location.href = "home.html"; }
+        });
+
+        let isSignUp = false;
+        const formTitle = document.getElementById('form-title');
+        const submitBtn = document.getElementById('submit-btn');
+        const toggleAction = document.getElementById('toggle-action');
+        const toggleText = document.getElementById('toggle-text');
+
+        toggleText.addEventListener('click', () => {
+            isSignUp = !isSignUp;
+            formTitle.innerText = isSignUp ? "Create Account" : "Smart Online Store";
+            submitBtn.innerText = isSignUp ? "Sign Up" : "Login";
+            toggleAction.innerText = isSignUp ? "Login" : "Sign Up";
+        });
+
+        document.getElementById('auth-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            if (isSignUp) {
+                createUserWithEmailAndPassword(auth, email, password)
+                    .then(() => { window.location.href = "home.html"; })
+                    .catch((error) => { alert(error.message); });
+            } else {
+                signInWithEmailAndPassword(auth, email, password)
+                    .then(() => { window.location.href = "home.html"; })
+                    .catch((error) => { alert('Login failed. Please check credentials.'); });
+            }
+        });
     </script>
 </body>
 </html>
