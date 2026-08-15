@@ -65,17 +65,20 @@
 
     <div class="container">
         <div class="product-grid" id="product-container">
-            <!-- Products loaded from Firestore -->
+            <!-- Products loaded from Supabase -->
         </div>
-        <div class="powered">Powered by Meesho / Affiliate Store</div>
+        <div class="powered">Powered by Affiliate Store</div>
     </div>
 
-    <!-- Firebase Auth (for logout check) & Firestore (for loading products) -->
+    <!-- Firebase Auth & Supabase JS SDKs -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-        import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        
+        // Supabase CDN SDK
+        import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm";
 
+        // Firebase Configuration
         const firebaseConfig = {
             apiKey: "AIzaSyDzC-okomVG-pe08RH-JPp0s6NG1BBGIEE",
             authDomain: "a-one-chat-e3642.firebaseapp.com",
@@ -88,10 +91,17 @@
 
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
-        const db = getFirestore(app);
 
+        // Supabase Configuration
+        const SUPABASE_URL = 'https://dnlvoubafquotxcnqkhi.supabase.co';
+        const SUPABASE_ANON_KEY = 'sb_publishable_fyiPBavDsU-Aax49r5Xi4g_9eg67WnA';
+        const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        // Auth Protection Check
         onAuthStateChanged(auth, (user) => {
-            if (!user) { window.location.href = "index.html"; }
+            if (!user) { 
+                window.location.href = "index.html"; 
+            }
         });
 
         document.getElementById('logout-btn').addEventListener('click', () => {
@@ -111,19 +121,19 @@
 
         async function loadProducts() {
             try {
-                const querySnapshot = await getDocs(collection(db, "products"));
-                const container = document.getElementById('product-container');
-                container.innerHTML = "";
-                allProducts = [];
+                const { data: products, error } = await supabase
+                    .from('products')
+                    .select('*');
 
-                querySnapshot.forEach((doc) => {
-                    const p = doc.data();
-                    allProducts.push(p);
-                });
+                if (error) {
+                    console.error("Error loading products: ", error);
+                    return;
+                }
 
+                allProducts = products || [];
                 displayProducts(allProducts);
             } catch (error) {
-                console.error("Error loading products: ", error);
+                console.error("Error fetching products: ", error);
             }
         }
 
@@ -143,7 +153,7 @@
                         <div class="product-info">
                             <div class="product-title">${p.name}</div>
                             <div class="product-price">${p.price}</div>
-                            <a href="${p.link}" class="buy-btn" target="_blank">View Product (URL)</a>
+                            <a href="${p.link}" class="buy-btn" target="_blank">View Product</a>
                         </div>
                     </div>`;
             });
@@ -169,7 +179,7 @@
         function filterAndSearch() {
             const query = searchInput.value.toLowerCase();
             const filtered = allProducts.filter(p => {
-                const matchesSearch = p.name.toLowerCase().includes(query);
+                const matchesSearch = p.name && p.name.toLowerCase().includes(query);
                 const matchesCat = (currentCategory === 'all' || (p.category && p.category === currentCategory));
                 return matchesSearch && matchesCat;
             });
