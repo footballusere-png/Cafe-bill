@@ -20,7 +20,7 @@
 <body>
 
     <div class="admin-box">
-        <h2>🛍️ Add New Product (URL Base)</h2>
+        <h2>🛍️ Add New Product (Supabase)</h2>
         <form id="product-form">
             <div class="form-group">
                 <label>Product Name</label>
@@ -54,22 +54,13 @@
         <a href="home.html" class="back-link">← Back to Store</a>
     </div>
 
+    <!-- Supabase JS SDK -->
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm";
 
-        const firebaseConfig = {
-            apiKey: "AIzaSyDzC-okomVG-pe08RH-JPp0s6NG1BBGIEE",
-            authDomain: "a-one-chat-e3642.firebaseapp.com",
-            projectId: "a-one-chat-e3642",
-            storageBucket: "a-one-chat-e3642.firebasestorage.app",
-            messagingSenderId: "91366490582",
-            appId: "1:91366490582:web:669e8a9bfc54f424a82477",
-            measurementId: "G-T4WVE2QKXB"
-        };
-
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
+        const SUPABASE_URL = 'https://dnlvoubafquotxcnqkhi.supabase.co';
+        const SUPABASE_ANON_KEY = 'sb_publishable_fyiPBavDsU-Aax49r5Xi4g_9eg67WnA';
+        const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
         document.getElementById('product-form').addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -80,9 +71,16 @@
             const link = document.getElementById('p-link').value;
 
             try {
-                await addDoc(collection(db, "products"), { name, price, category, img, link });
-                alert('Product successfully added with URL!');
-                document.getElementById('product-form').reset();
+                const { data, error } = await supabase
+                    .from('products')
+                    .insert([{ name, price, category, img, link }]);
+
+                if (error) {
+                    alert('Error: ' + error.message);
+                } else {
+                    alert('Product successfully added to Supabase!');
+                    document.getElementById('product-form').reset();
+                }
             } catch (error) {
                 alert('Error: ' + error.message);
             }
