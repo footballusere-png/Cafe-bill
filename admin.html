@@ -20,7 +20,7 @@
 <body>
 
     <div class="admin-box">
-        <h2>🛍️ Add New Product (Supabase)</h2>
+        <h2>🛍️ Add New Product</h2>
         <form id="product-form">
             <div class="form-group">
                 <label>Product Name</label>
@@ -65,7 +65,8 @@
         document.getElementById('product-form').addEventListener('submit', async (e) => {
             e.preventDefault();
             const name = document.getElementById('p-name').value;
-            const price = document.getElementById('p-price').value;
+            const price = document.getElementById('p-price5') ? document.getElementById('p-price5').value : document.getElementById('p-price').value;
+            const actualPrice = document.getElementById('p-price').value;
             const category = document.getElementById('p-category').value;
             const img = document.getElementById('p-img').value;
             const link = document.getElementById('p-link').value;
@@ -73,7 +74,7 @@
             try {
                 const { data, error } = await supabase
                     .from('products')
-                    .insert([{ name, price, category, img, link }]);
+                    .insert([{ name: name, price: actualPrice, category: category, img: img, link: link }]);
 
                 if (error) {
                     alert('Error: ' + error.message);
